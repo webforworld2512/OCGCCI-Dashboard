@@ -903,8 +903,8 @@ function renderConclusions(d){
     const gpas=d.map(r=>r[4]);
     const mn=Math.min(...gpas), mx=Math.max(...gpas), av=avg(gpas);
     conclusions.push({t:av>=4.4?'c-good':'c-info',
-      title:`${CRS[ci]} — performance snapshot`,
-      body:`Across ${d.length} records${ctx}, <b>${CRS[ci]}</b> averages <b>${fmt(av)}</b> with individual scores ranging from ${mn.toFixed(2)} to ${mx.toFixed(2)}. ${av>=4.4?'This reflects strong and consistent performance across outcomes.':av>=4.0?'Performance is solid. Continued focus on high-engagement instructional practices can push this further.':'There is meaningful growth potential here — reviewing instructional strategies and student support resources would be a productive next step.'}`});
+      title:`${courseName(ci)} — performance snapshot`,
+      body:`Across ${d.length} records${ctx}, <b>${courseName(ci)}</b> averages <b>${fmt(av)}</b> with individual scores ranging from ${mn.toFixed(2)} to ${mx.toFixed(2)}. ${av>=4.4?'This reflects strong and consistent performance across outcomes.':av>=4.0?'Performance is solid. Continued focus on high-engagement instructional practices can push this further.':'There is meaningful growth potential here — reviewing instructional strategies and student support resources would be a productive next step.'}`});
   }
 
   // 2. Campus comparison — only if BOTH campuses are visible
