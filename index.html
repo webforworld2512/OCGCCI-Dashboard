@@ -259,7 +259,7 @@ tbody tr:last-child td{border-bottom:none}
   <div class="fgrp">
     <div class="fg-lbl">Course</div>
     <button class="fb on" data-f="course" data-v="all">All Courses</button>
-    <button class="fb" data-f="course" data-v="19">CONE C480</button>
+    <button class="fb" data-f="course" data-v="19">CONE 480</button>
     <button class="fb" data-f="course" data-v="14">CIVE 495</button>
     <button class="fb" data-f="course" data-v="9">CIVE 444</button>
     <button class="fb" data-f="course" data-v="5">CIVE 301</button>
@@ -268,8 +268,8 @@ tbody tr:last-child td{border-bottom:none}
     <button class="fb" data-f="course" data-v="10">CIVE 462</button>
     <button class="fb" data-f="course" data-v="0">CIVE 100</button>
     <button class="fb" data-f="course" data-v="4">CIVE 225</button>
-    <button class="fb" data-f="course" data-v="16">CONE C101</button>
-    <button class="fb" data-f="course" data-v="18">CONE C401</button>
+    <button class="fb" data-f="course" data-v="16">CONE 101</button>
+    <button class="fb" data-f="course" data-v="18">CONE 401</button>
   </div>
   <div class="sdiv"></div>
   <div class="fgrp">
@@ -294,7 +294,7 @@ tbody tr:last-child td{border-bottom:none}
   </div>
   <div class="sdiv"></div>
   <div class="fgrp">
-    <div class="fg-lbl">GPA Range</div>
+    <div class="fg-lbl">Score Range</div>
     <div class="range-row">
       <span>Min: <b id="minLbl">2.5</b></span>
       <span>Max: <b id="maxLbl">5.0</b></span>
@@ -332,7 +332,7 @@ tbody tr:last-child td{border-bottom:none}
       </div>
       <div class="two">
         <div>
-          <div class="card-h"><span class="card-title">GPA over semesters</span><span class="card-hint" id="trendHint">OC · GC · Overall</span></div>
+          <div class="card-h"><span class="card-title">Score over semesters</span><span class="card-hint" id="trendHint">OC · GC · Overall</span></div>
           <div class="ch" style="height:220px" id="trendWrap"><canvas id="cTrend"></canvas></div>
         </div>
         <div>
@@ -342,7 +342,7 @@ tbody tr:last-child td{border-bottom:none}
       </div>
       <!-- Percentage breakdown row -->
       <div style="margin-top:14px;border-top:1px solid var(--brd);padding-top:14px">
-        <div class="card-h"><span class="card-title">Performance distribution</span><span class="card-hint">% of records by GPA band</span></div>
+        <div class="card-h"><span class="card-title">Performance distribution</span><span class="card-hint">% of records by score band</span></div>
         <div class="two" style="align-items:center">
           <div class="ch" style="height:180px"><canvas id="cDonut"></canvas></div>
           <div id="pctBars" style="display:flex;flex-direction:column;gap:6px"></div>
@@ -355,11 +355,11 @@ tbody tr:last-child td{border-bottom:none}
       <div class="vs-wrap" id="vsStats"></div>
       <div class="two">
         <div>
-          <div class="card-h"><span class="card-title">Avg GPA per semester</span></div>
+          <div class="card-h"><span class="card-title">Avg score per semester</span></div>
           <div class="ch" style="height:200px"><canvas id="cCmpSem"></canvas></div>
         </div>
         <div>
-          <div class="card-h"><span class="card-title">Avg GPA per outcome</span></div>
+          <div class="card-h"><span class="card-title">Avg score per outcome</span></div>
           <div class="ch" style="height:200px"><canvas id="cCmpOut"></canvas></div>
         </div>
       </div>
@@ -378,7 +378,7 @@ tbody tr:last-child td{border-bottom:none}
         </div>
       </div>
       <div class="card-h">
-        <span class="card-title">Course GPA over semesters</span>
+        <span class="card-title">Course Score over semesters</span>
         <span class="card-hint" id="crsTrendLbl"></span>
       </div>
       <div class="ch" style="height:180px"><canvas id="cCrsTrend"></canvas></div>
@@ -420,6 +420,14 @@ const CRS    = _D.meta.courses;
 const RAW    = _D.data;
 const SL = {S23:"Sp'23",F23:"Fa'23",S24:"Sp'24",F24:"Fa'24",S25:"Sp'25",F25:"Fa'25",S26:"Sp'26",F26:"Fa'26"};
 const SEM_FULL = {S23:'Spring 2023',F23:'Fall 2023',S24:'Spring 2024',F24:'Fall 2024',S25:'Spring 2025',F25:'Fall 2025',S26:'Spring 2026',F26:'Fall 2026'};
+
+function courseName(ci){
+  const c=CRS[ci];
+  const coneMap={'C101':'CONE 101','C330':'CONE 330','C401':'CONE 401','C480':'CONE 480'};
+  if(coneMap[c]) return coneMap[c];
+  return 'CIVE '+c;
+}
+
 
 let F = {campus:'all', sem:'all', course:'all', outcome:'all', minG:2.5, maxG:5.0};
 
@@ -503,7 +511,7 @@ function renderKPIs(d){
   const realPct=d.length?Math.round(d.filter(r=>r[5]).length/d.length*100):0;
   const gc2=v=>v>=4.4?'var(--green)':v>=4.0?'var(--blue)':'var(--red)';
   document.getElementById('kpiRow').innerHTML=`
-  <div class="kpi"><div class="kpi-lbl">Overall Avg GPA</div>
+  <div class="kpi"><div class="kpi-lbl">Overall Avg Score</div>
     <div class="kpi-val" style="color:${gc2(ov)}">${fmt(ov)}</div>
     <div class="kpi-sub">${d.length.toLocaleString()} records · /5.0</div>
     <div class="kpi-badge b-acc">${realPct}% verified</div></div>
@@ -537,8 +545,8 @@ function renderInsights(d){
     const semLabel=nSems===1?` in ${SEM_FULL[SEMS[[...new Set(d.map(r=>r[2]))][0]]]}`:` across ${nSems} semesters`;
     const campusLabel=hasOC&&hasGC?' across both campuses':hasOC?' (On Campus)':' (Global Campus)';
     ins.push({t:ovAvg>=4.4?'good':'info', ic:ovAvg>=4.4?'✓':'📋',
-      tl:`Overall: ${fmt(ovAvg)} avg GPA`,
-      tx:`${d.length} records reviewed${semLabel}${campusLabel} across ${nCrs} course${nCrs>1?'s':''} and ${nOuts} outcome${nOuts>1?'s':''}. ${realPct>0?`${realPct}% of records are verified data.`:''} ${ovAvg>=4.4?'Performance is strong across this selection.':ovAvg>=4.0?'Performance is solid with room for continued growth.':'Performance is developing — see detailed breakdown below.'}`});
+      tl:`Overall: ${fmt(ovAvg)} avg score`,
+      tx:`${d.length} records reviewed${semLabel}${campusLabel} across ${nCrs} course${nCrs>1?'s':''} and ${nOuts} outcome${nOuts>1?'s':''}. ${realPct>0?`${realPct}% of records are verified data.`:''} ${ovAvg>=4.4?'Performance is strong across this selection.':ovAvg>=4.0?'Performance is solid with room for continued growth.':'There is meaningful growth potential — see detailed breakdown below.'}`});
   }
 
   // Campus comparison (always show if both present, or explain single-campus)
@@ -554,33 +562,33 @@ function renderInsights(d){
       tx:`On Campus avg (${fmt(ocAvg)}) is ${df.toFixed(3)} pts above Global Campus (${fmt(gcAvg)}). Both modes are within a normal range — consider reviewing online engagement strategies to further align outcomes.`});
   } else if(hasOC&&!hasGC&&ocAvg){
     ins.push({t:'info',ic:'🏫',tl:'On Campus view',
-      tx:`Showing On Campus performance only — avg GPA ${fmt(ocAvg)} across ${d.filter(r=>r[1]===0).length} records. Select "All Campuses" to compare with Global Campus delivery for a fuller picture.`});
+      tx:`Showing On Campus performance only — avg score ${fmt(ocAvg)} across ${d.filter(r=>r[1]===0).length} records. Select "All Campuses" to compare with Global Campus delivery for a fuller picture.`});
   } else if(!hasOC&&hasGC&&gcAvg){
     ins.push({t:'info',ic:'🌐',tl:'Global Campus view',
-      tx:`Showing Global Campus performance only — avg GPA ${fmt(gcAvg)} across ${d.filter(r=>r[1]===1).length} records. Select "All Campuses" to compare with On Campus delivery for a fuller picture.`});
+      tx:`Showing Global Campus performance only — avg score ${fmt(gcAvg)} across ${d.filter(r=>r[1]===1).length} records. Select "All Campuses" to compare with On Campus delivery for a fuller picture.`});
   }
 
   // Course or outcome highlight — always show something useful
   if(nCrs>=2){
     const cMap={};d.forEach(r=>{if(!cMap[r[3]])cMap[r[3]]=[];cMap[r[3]].push(r[4]);});
     const cA=Object.entries(cMap).map(([ci,g])=>({ci:+ci,a:avg(g)})).sort((a,b)=>b.a-a.a);
-    ins.push({t:'good',ic:'⭐',tl:`Strongest course: ${CRS[cA[0].ci]}`,
-      tx:`<b>${CRS[cA[0].ci]}</b> leads this selection with avg GPA <b>${fmt(cA[0].a)}</b>. ${cA.length>1?`Range across ${cA.length} courses: ${fmt(cA[cA.length-1].a)} – ${fmt(cA[0].a)}.`:''} Review the teaching approach in this course as a potential model for others.`});
+    ins.push({t:'good',ic:'⭐',tl:`Strongest course: ${courseName(cA[0].ci)}`,
+      tx:`<b>${courseName(cA[0].ci)}</b> leads this selection with avg score <b>${fmt(cA[0].a)}</b>. ${cA.length>1?`Range across ${cA.length} courses: ${fmt(cA[cA.length-1].a)} – ${fmt(cA[0].a)}.`:''} Review the teaching approach in this course as a potential model for others.`});
   } else if(nCrs===1){
     // Single course: show outcome spread instead
     if(nOuts>=2){
       const oMap={};d.forEach(r=>{if(!oMap[r[0]])oMap[r[0]]=[];oMap[r[0]].push(r[4]);});
       const oA=Object.entries(oMap).map(([o,g])=>({o:+o,a:avg(g)})).sort((a,b)=>b.a-a.a);
-      ins.push({t:'good',ic:'📊',tl:`${CRS[d[0][3]]} — outcome spread`,
-        tx:`Across ${oA.length} outcomes, GPA ranges from <b>${fmt(oA[oA.length-1].a)}</b> to <b>${fmt(oA[0].a)}</b>. Outcome ${oA[0].o} shows the strongest achievement; use the Outcome Heatmap tab for a full breakdown.`});
+      ins.push({t:'good',ic:'📊',tl:`${courseName(d[0][3])} — outcome spread`,
+        tx:`Across ${oA.length} outcomes, Score ranges from <b>${fmt(oA[oA.length-1].a)}</b> to <b>${fmt(oA[0].a)}</b>. Outcome ${oA[0].o} shows the strongest achievement; use the Outcome Heatmap tab for a full breakdown.`});
     } else if(nSems>=2){
       // Show semester trajectory
       const sMap={};d.forEach(r=>{if(!sMap[r[2]])sMap[r[2]]=[];sMap[r[2]].push(r[4]);});
       const sA=Object.keys(sMap).sort((a,b)=>+a-+b).map(si=>({si:+si,a:avg(sMap[si])}));
       const delta=sA[sA.length-1].a-sA[0].a;
       ins.push({t:delta>=0?'good':'info',ic:delta>=0?'📈':'📊',
-        tl:`${CRS[d[0][3]]} — semester trajectory`,
-        tx:`GPA moved from ${fmt(sA[0].a)} (${SEM_FULL[SEMS[sA[0].si]]}) to ${fmt(sA[sA.length-1].a)} (${SEM_FULL[SEMS[sA[sA.length-1].si]]}), a change of ${delta>=0?'+':''}${delta.toFixed(3)}. Use the Course Analysis tab to explore the full trend.`});
+        tl:`${courseName(d[0][3])} — semester trajectory`,
+        tx:`Score moved from ${fmt(sA[0].a)} (${SEM_FULL[SEMS[sA[0].si]]}) to ${fmt(sA[sA.length-1].a)} (${SEM_FULL[SEMS[sA[sA.length-1].si]]}), a change of ${delta>=0?'+':''}${delta.toFixed(3)}. Use the Course Analysis tab to explore the full trend.`});
     }
   }
 
@@ -658,9 +666,9 @@ function renderTrends(d){
   const dd=allSi.map(i=>{const g=sA[i]||[];return{mn:Math.min(...g),av:avg(g),mx:Math.max(...g),lbl:SL[SEMS[i]]};});
   const spreadMin=dd.length?Math.max(2.0,Math.floor((Math.min(...dd.map(x=>x.mn))-0.2)*10)/10):2.0;
   mkChart('cDist',{type:'bar',data:{labels:dd.map(x=>x.lbl),datasets:[
-    {label:'Max GPA',data:dd.map(x=>x.mx),backgroundColor:'rgba(26,112,64,.55)',borderRadius:4},
-    {label:'Avg GPA',data:dd.map(x=>x.av),backgroundColor:'rgba(27,79,216,.75)',borderRadius:4},
-    {label:'Min GPA',data:dd.map(x=>x.mn),backgroundColor:'rgba(184,48,37,.45)',borderRadius:4},
+    {label:'Max Score',data:dd.map(x=>x.mx),backgroundColor:'rgba(26,112,64,.55)',borderRadius:4},
+    {label:'Avg Score',data:dd.map(x=>x.av),backgroundColor:'rgba(27,79,216,.75)',borderRadius:4},
+    {label:'Min Score',data:dd.map(x=>x.mn),backgroundColor:'rgba(184,48,37,.45)',borderRadius:4},
   ]},options:withLegend({...BASE,plugins:{...BASE.plugins,
     legend:{display:true,labels:{color:INK3,font:{size:10,family:MONO},boxWidth:12,padding:14}},
     tooltip:{...BASE.plugins.tooltip,callbacks:{label:ctx=>`${ctx.dataset.label}: ${ctx.raw.toFixed(2)}`}}},
@@ -714,8 +722,8 @@ function _drawPercentage(d){
   const bands=[
     {label:'Excellent (4.5–5.0)',min:4.5,max:5.01,color:'#1A7040',bg:'#E5F2EB'},
     {label:'Strong (4.0–4.49)', min:4.0,max:4.5, color:'#1B4FD8',bg:'#E8EEFB'},
-    {label:'Developing (3.5–3.99)',min:3.5,max:4.0,color:'#A85C00',bg:'#FEF0D9'},
-    {label:'Foundation (<3.5)',   min:0,  max:3.5, color:'#6B6459',bg:'#EEEBE4'},
+    {label:'Attention (3.5–3.99)',min:3.5,max:4.0,color:'#A85C00',bg:'#FEF0D9'},
+    {label:'Action Needed (<3.5)',min:0,  max:3.5, color:'#6B6459',bg:'#EEEBE4'},
   ];
   const counts=bands.map(b=>gpas.filter(v=>v>=b.min&&v<b.max).length);
   const total=gpas.length;
@@ -795,7 +803,7 @@ function renderCourses(d){
     const vals=data.map(x=>x.a);
     const xMin=vals.length?Math.max(2.0,Math.floor((Math.min(...vals)-0.2)*10)/10):2.0;
     mkChart(id,{type:'bar',data:{
-      labels:data.map(x=>CRS[x.ci]),
+      labels:data.map(x=>courseName(x.ci)),
       datasets:[{data:vals,
         backgroundColor:vals.map(v=>v>=4.4?'rgba(26,112,64,.7)':v>=4.0?'rgba(27,79,216,.6)':'rgba(184,48,37,.6)'),
         borderRadius:4}]
@@ -811,7 +819,7 @@ function renderCourses(d){
   let crIdx;
   if(F.course!=='all') crIdx=+F.course;
   else{const cnt={};d.forEach(r=>{cnt[r[3]]=(cnt[r[3]]||0)+1;});crIdx=+Object.entries(cnt).sort((a,b)=>b[1]-a[1])[0][0];}
-  document.getElementById('crsTrendLbl').textContent='Showing: '+CRS[crIdx];
+  document.getElementById('crsTrendLbl').textContent='Showing: '+courseName(crIdx);
   const crD=d.filter(r=>r[3]===crIdx);
   const sO={},sG={};
   crD.forEach(r=>{if(r[1]===0){if(!sO[r[2]])sO[r[2]]=[];sO[r[2]].push(r[4]);}else{if(!sG[r[2]])sG[r[2]]=[];sG[r[2]].push(r[4]);}});
@@ -847,13 +855,13 @@ function renderHeatmap(d){
 let srchVal='';
 function renderTable(d){
   const q=srchVal.toLowerCase();
-  const rows=d.filter(r=>!q||CRS[r[3]].toLowerCase().includes(q)||SEMS[r[2]].toLowerCase().includes(q)||String(r[0]).includes(q)||(r[1]===0?'on campus':'global campus').includes(q)).slice(0,500);
+  const rows=d.filter(r=>!q||courseName(r[3]).toLowerCase().includes(q)||SEMS[r[2]].toLowerCase().includes(q)||String(r[0]).includes(q)||(r[1]===0?'on campus':'global campus').includes(q)).slice(0,500);
   document.getElementById('rowCnt').textContent=`${rows.length} rows (max 500)`;
   document.getElementById('tblWrap').innerHTML=`<table>
-    <thead><tr><th>Outcome</th><th>Course</th><th>Campus</th><th>Semester</th><th>GPA</th><th>Source</th></tr></thead>
+    <thead><tr><th>Outcome</th><th>Course</th><th>Campus</th><th>Semester</th><th>Score</th><th>Source</th></tr></thead>
     <tbody>${rows.map(r=>`<tr>
       <td style="font-family:${MONO};font-weight:600">O-${r[0]}</td>
-      <td style="font-weight:700;color:var(--ink)">${CRS[r[3]]}</td>
+      <td style="font-weight:700;color:var(--ink)">${courseName(r[3])}</td>
       <td><span class="ctag ${r[1]===0?'c-oc':'c-gc'}">${r[1]===0?'On Campus':'Global Campus'}</span></td>
       <td style="font-family:${MONO}">${SEMS[r[2]]}</td>
       <td>${gpaPill(r[4])}</td>
@@ -876,7 +884,7 @@ function renderConclusions(d){
   const ctxParts=[];
   if(F.campus!=='all') ctxParts.push(F.campus==='0'?'On Campus':'Global Campus');
   if(F.sem!=='all') ctxParts.push(SEM_FULL[SEMS[+F.sem]]);
-  if(F.course!=='all') ctxParts.push(CRS[+F.course]);
+  if(F.course!=='all') ctxParts.push(courseName(+F.course));
   if(F.outcome!=='all') ctxParts.push('Outcome '+F.outcome);
   const ctx=ctxParts.length?` (${ctxParts.join(', ')})`:'';
 
@@ -886,10 +894,10 @@ function renderConclusions(d){
     const cArr=Object.entries(cMap).map(([ci,g])=>({ci:+ci,a:avg(g)})).sort((a,b)=>b.a-a.a);
     const spread=(cArr[0].a-cArr[cArr.length-1].a).toFixed(3);
     conclusions.push({t:'c-good',title:'Leading course'+ctx,
-      body:`<b>${CRS[cArr[0].ci]}</b> achieves the highest avg GPA of <b>${fmt(cArr[0].a)}</b> in this selection — a strong benchmark for course delivery. ${cArr.length>1?`The performance range across ${nCrs} courses is ${fmt(cArr[cArr.length-1].a)}–${fmt(cArr[0].a)} (spread: ${spread} pts).`:''} Consider sharing its teaching approach and assessment design with other course instructors.`});
+      body:`<b>${courseName(cArr[0].ci)}</b> achieves the highest avg score of <b>${fmt(cArr[0].a)}</b> in this selection — a strong benchmark for course delivery. ${cArr.length>1?`The performance range across ${nCrs} courses is ${fmt(cArr[cArr.length-1].a)}–${fmt(cArr[0].a)} (spread: ${spread} pts).`:''} Consider sharing its teaching approach and assessment design with other course instructors.`});
     const lo=cArr[cArr.length-1];
     conclusions.push({t:'c-info',title:'Course with most room to grow'+ctx,
-      body:`<b>${CRS[lo.ci]}</b> averages <b>${fmt(lo.a)}</b> — the lowest in this selection. Targeted support such as additional student resources, revised pacing, or peer learning initiatives could help lift outcomes toward the program average of ${fmt(avg(d.map(r=>r[4])))}.`});
+      body:`<b>${courseName(lo.ci)}</b> averages <b>${fmt(lo.a)}</b> — the lowest in this selection. Targeted support such as additional student resources, revised pacing, or peer learning initiatives could help lift outcomes toward the program average of ${fmt(avg(d.map(r=>r[4])))}.`});
   } else if(nCrs===1){
     const ci=d[0][3];
     const gpas=d.map(r=>r[4]);
@@ -933,23 +941,23 @@ function renderConclusions(d){
     conclusions.push({t:trend==='upward'?'c-good':'c-info',
       title:`Performance ${trend==='upward'?'momentum':'trend'} — ${SEM_FULL[SEMS[sArr[0].si]]} to ${SEM_FULL[SEMS[sArr[sArr.length-1].si]]}`,
       body:trend==='upward'
-        ?`Average GPA has grown by <b>+${delta.toFixed(3)}</b> from ${fmt(first)} to ${fmt(last)} across ${nSems} semesters${ctx}. This positive trajectory reflects the impact of sustained instructional investment — continue and document current best practices.`
+        ?`Average score has grown by <b>+${delta.toFixed(3)}</b> from ${fmt(first)} to ${fmt(last)} across ${nSems} semesters${ctx}. This positive trajectory reflects the impact of sustained instructional investment — continue and document current best practices.`
         :trend==='softening'
-        ?`Average GPA moved from ${fmt(first)} to ${fmt(last)} across ${nSems} semesters${ctx}. Note: some records in this range are projected values. Reviewing verified semester data and applying targeted support in upcoming terms can reinforce positive outcomes.`
-        :`GPA has remained consistent from ${fmt(first)} to ${fmt(last)} across ${nSems} semesters${ctx}. Stable delivery is a foundation for growth — identifying the highest-performing semester and replicating those conditions could push the trend upward.`});
+        ?`Average score moved from ${fmt(first)} to ${fmt(last)} across ${nSems} semesters${ctx}. Note: some records in this range are projected values. Reviewing verified semester data and applying targeted support in upcoming terms can reinforce positive outcomes.`
+        :`Score has remained consistent from ${fmt(first)} to ${fmt(last)} across ${nSems} semesters${ctx}. Stable delivery is a foundation for growth — identifying the highest-performing semester and replicating those conditions could push the trend upward.`});
   } else if(nSems===1){
     const sem=SEMS[[...new Set(d.map(r=>r[2]))][0]];
     const av=avg(d.map(r=>r[4]));
     conclusions.push({t:av>=4.4?'c-good':'c-info',
       title:`Snapshot: ${SEM_FULL[sem]}`,
-      body:`Avg GPA is <b>${fmt(av)}</b> across ${d.length} records for ${SEM_FULL[sem]}${ctx}. Expand to "All Semesters" to compare performance over time and identify whether this semester is above, at, or below the programme's historical average.`});
+      body:`Avg score is <b>${fmt(av)}</b> across ${d.length} records for ${SEM_FULL[sem]}${ctx}. Expand to "All Semesters" to compare performance over time and identify whether this semester is above, at, or below the programme's historical average.`});
   } else if(nSems===2){
     const sMap={};d.forEach(r=>{if(!sMap[r[2]])sMap[r[2]]=[];sMap[r[2]].push(r[4]);});
     const sArr=Object.keys(sMap).sort((a,b)=>+a-+b).map(si=>({si:+si,a:avg(sMap[si])}));
     const delta=sArr[1].a-sArr[0].a;
     conclusions.push({t:delta>0.03?'c-good':'c-info',
       title:`${SEM_FULL[SEMS[sArr[0].si]]} → ${SEM_FULL[SEMS[sArr[1].si]]}`,
-      body:`GPA ${delta>=0?'strengthened':'shifted'} by <b>${delta>=0?'+':''}${delta.toFixed(3)}</b> between these two semesters (${fmt(sArr[0].a)} → ${fmt(sArr[1].a)})${ctx}. Add more semesters to the filter to confirm whether this reflects a sustained programme trend.`});
+      body:`Score ${delta>=0?'strengthened':'shifted'} by <b>${delta>=0?'+':''}${delta.toFixed(3)}</b> between these two semesters (${fmt(sArr[0].a)} → ${fmt(sArr[1].a)})${ctx}. Add more semesters to the filter to confirm whether this reflects a sustained programme trend.`});
   }
 
   // 4. Outcome spread — only if multiple outcomes visible
@@ -958,7 +966,7 @@ function renderConclusions(d){
     const oArr=Object.entries(oMap).map(([o,g])=>({o:+o,a:avg(g)})).sort((a,b)=>b.a-a.a);
     const spread=oArr[0].a-oArr[oArr.length-1].a;
     conclusions.push({t:'c-info',title:'Outcome achievement range',
-      body:`Across ${nOuts} outcomes, GPA ranges from <b>${fmt(oArr[oArr.length-1].a)}</b> (Outcome ${oArr[oArr.length-1].o}) to <b>${fmt(oArr[0].a)}</b> (Outcome ${oArr[0].o}) — a spread of ${spread.toFixed(3)} pts. This variation is natural across different learning objectives. The Outcome Heatmap tab provides a full semester-by-semester breakdown to identify where to focus development efforts.`});
+      body:`Across ${nOuts} outcomes, Score ranges from <b>${fmt(oArr[oArr.length-1].a)}</b> (Outcome ${oArr[oArr.length-1].o}) to <b>${fmt(oArr[0].a)}</b> (Outcome ${oArr[0].o}) — a spread of ${spread.toFixed(3)} pts. This variation is natural across different learning objectives. The Outcome Heatmap tab provides a full semester-by-semester breakdown to identify where to focus development efforts.`});
   }
 
   card.innerHTML=`
